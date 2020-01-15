@@ -1,0 +1,47 @@
+$TTL	300
+$ORIGIN honeypot.local.
+@  1D     IN  SOA    ns1.honeypot.local. hostmaster.honeypot.local. (
+			      2002022401 ; serial
+			      500 ; refresh
+			      15 ; retry
+			      500 ; expire
+			      500 ; nxdomain ttl
+			      )
+          IN  NS     ns1.honeypot.local.
+          IN  MX  10 mx.honeypot.local.
+          IN  TXT    "v=spf1 mx a ip4:127.0.0.1 -all"
+          IN  A      127.0.0.1
+          IN  AAAA   ::1
+ns1       IN  A      127.0.0.1
+mx        IN  A      127.0.0.1
+the       IN  A      127.0.0.1
+quick     IN  A      127.0.0.2
+brown     IN  A      127.0.0.3
+fox       IN  A      127.0.0.4
+jumps     IN  A      127.0.0.5 
+over      IN  A      127.0.0.6
+the       IN  A      127.0.0.7
+lazy      IN  A      127.0.0.8
+sleeping  IN  A      127.0.0.9
+dog       IN  A      127.0.0.10
+the       IN  AAAA   ::1
+quick     IN  AAAA   ::2
+brown     IN  AAAA   ::3
+fox       IN  AAAA   ::4
+jumps     IN  AAAA   ::5 
+over      IN  AAAA   ::6
+the       IN  AAAA   ::7
+lazy      IN  AAAA   ::8
+sleeping  IN  AAAA   ::9
+dog       IN  AAAA   ::10
+lorem     IN  CNAME  the
+ipsum     IN  CNAME  quick
+dolor     IN  CNAME  brown
+sit       IN  CNAME  fox
+amet      IN  CNAME  jumps
+_DMARC    IN  TXT    "v=DMARC1; p=none; rua=mailto:webmaster@honeypot.local; ruf=mailto:webmaster@honeypot.local; fo=1"
+1579196883.honeypot._domainkey IN TXT (
+        "v=DKIM1;t=s;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/Sg5VRSvtH3yTwyg2La+KHeJ0"
+        "bzKVkcly6yFpaDWtLyzJG4t1fKlUC9VsI4vOqeE+5xMNBah+mhzbZw80ijvMV9yZ"
+        "gVHFUMBzSdGF+dJVqcarES9F5Sm7nIXrIRlMaXOUfGttjCGwoTPd3u2W9RgssvJ5"
+        "3C+i9oK7VqYbd391mwIDAQAB")

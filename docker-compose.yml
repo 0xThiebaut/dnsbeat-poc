@@ -1,0 +1,63 @@
+version: '3'
+services:
+  dns:
+    image: resystit/bind9@sha256:71c76b99115bf14171925fd5c4ceb799f4820b3625be6149e95c443127748e6e
+    volumes:
+      - ./named.conf:/etc/bind/named.conf:ro
+      - ./db.honeypot.local:/etc/bind/master/db.honeypot.local:ro 
+    ports:
+      - 127.0.0.1:5053:53/tcp
+      - 127.0.0.1:5053:53/udp
+    restart: unless-stopped
+    entrypoint: named -c /etc/bind/named.conf -g
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  kib01:
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    ports:
+      - 127.0.0.1:5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://es01:9200
+      ELASTICSEARCH_HOSTS: http://es01:9200
+    depends_on:
+      - es01
+    restart: unless-stopped
+
+  dnsbeat:
+    image: docker.pkg.github.com/0xthiebaut/dnsbeat/dnsbeat:v1
+    volumes:
+      - ./dnsbeat.yml:/usr/share/dnsbeat/dnsbeat.yml
+    depends_on:
+      - dns
+      - es01
+      - kib01
+    restart: unless-stopped
+
+  outliers:
+    image: nvisobe/ee-outliers:0.2
+    volumes:
+            - ./outliers.conf:/etc/outliers/outliers.conf:ro
+    depends_on:
+      - es01
+      - dnsbeat
+    entrypoint: python3 outliers.py daemon --config /etc/outliers/outliers.conf
+    restart: unless-stopped
+
+volumes:
+  esdata:
+    driver: local
